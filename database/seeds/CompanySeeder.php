@@ -13,7 +13,7 @@ class CompanySeeder extends Seeder
     public function run()
     {
         $company = new Company();
-        $company->user_id = 2;
+        $company->user_id = 1;
         $company->company_name = "Rokso India Pvt Ltd";
         $company->company_display_name = "Rokso Chemicals";
         $company->website = "www.rokso.com";

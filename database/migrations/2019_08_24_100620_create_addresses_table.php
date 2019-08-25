@@ -16,8 +16,8 @@ class CreateAddressesTable extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->string('type');
-            $table->string('type_id');
+            $table->integer('addressable_id');
+            $table->string('addressable_type');
             $table->string('meta');
             $table->string('address_line_1');
             $table->string('address_line_2');
@@ -26,8 +26,6 @@ class CreateAddressesTable extends Migration
             $table->string('pincode');
 
             $table->timestamps();
-            $table->integer('created_by')->references('id')->on('users');
-            $table->integer('updated_by')->references('id')->on('users');
         });
     }
 

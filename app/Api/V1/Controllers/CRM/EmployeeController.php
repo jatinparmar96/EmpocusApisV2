@@ -2,6 +2,7 @@
 
 namespace App\Api\V1\Controllers\CRM;
 
+use App\Api\V1\Controllers\Master\AddressController;
 use App\Api\V1\Requests\CRMRequests\EmployeeCreateRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -20,7 +21,12 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        //
+        $employees = Employee::all();
+        return response()->json([
+            'status' => true,
+            'data' => $employees,
+            'message' => 'Employee Retrieved Successfully'
+        ]);
     }
 
     /**
@@ -77,6 +83,10 @@ class EmployeeController extends Controller
         $employee->employee_contact_numbers = $request->contact_numbers;
         $employee->email = $request->email;
         $employee->save();
+        $addressController = new AddressController();
+        $addressController->store($request->permanent_address, 'App\Models\Master\Employee', $employee->id, "PermanentAddress");
+        $addressController->store($request->residential_address, 'App\Models\Master\Employee', $employee->id, "ResidentialAddress");
+        $employee->permanentAddress = $employee->permanentAddress;
 
         return $employee;
     }
@@ -87,9 +97,16 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($employee)
     {
-        //
+
+        $employee = Employee::where('id', $employee)->first();
+        $employee->permanentAddress;
+        return response()->json([
+            'status' => true,
+            'data' => $employee,
+            'message' => 'Employee Retrieved Successfully'
+        ]);
     }
 
     /**

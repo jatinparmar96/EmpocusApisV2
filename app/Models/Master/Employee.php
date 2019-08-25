@@ -17,4 +17,12 @@ class Employee extends Model
     protected $casts = [
         'employee_contact_numbers' => 'array',
     ];
+    public function permanentAddress()
+    {
+        return $this->addresses()->where('meta', 'PermanentAddress');
+    }
+    public function addresses()
+    {
+        return $this->morphMany('App\Models\Master\Address', 'addressable');
+    }
 }

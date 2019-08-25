@@ -37,6 +37,8 @@ $api->version('v1', function (Router $api) {
             $api->group(['prefix' => 'employee'], function (Router $api) {
 
                 $api->post('', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@create');
+                $api->get('', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@index');
+                $api->get('{employee}', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@show');
             });
         });
     });

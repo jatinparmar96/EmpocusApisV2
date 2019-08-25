@@ -30,6 +30,6 @@ class EmployeeContacts extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('employee_contacts');
     }
 }
