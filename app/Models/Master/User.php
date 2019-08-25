@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models\Master;
 
 use Hash;
 use Illuminate\Notifications\Notifiable;
@@ -20,14 +20,14 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
-
+    protected $table = 'users';
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'display_name', 'mobile'
     ];
 
     /**

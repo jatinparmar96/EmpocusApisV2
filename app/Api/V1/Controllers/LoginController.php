@@ -22,21 +22,23 @@ class LoginController extends Controller
     public function login(LoginRequest $request, JWTAuth $JWTAuth)
     {
         $credentials = $request->only(['email', 'password']);
-
         try {
             $token = Auth::guard()->attempt($credentials);
-
-            if(!$token) {
-                throw new AccessDeniedHttpException();
+            if (!$token) {
+                return response()
+                    ->json([
+                        'status' => false,
+                        'status_code' => 200,
+                        'message' => 'Incorrect User Name or Password',
+                    ]);
             }
-
         } catch (JWTException $e) {
             throw new HttpException(500);
         }
 
         return response()
             ->json([
-                'status' => 'ok',
+                'status' => true,
                 'token' => $token,
                 'expires_in' => Auth::guard()->factory()->getTTL() * 60
             ]);
