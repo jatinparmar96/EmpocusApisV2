@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Master\Employee;
 use Exception;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -21,7 +20,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::all();
+        $employees = Employee::with(['permanent_address','residential_address'])->paginate();
         return response()->json([
             'status' => true,
             'data' => $employees,
@@ -31,7 +30,7 @@ class EmployeeController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
+     * @param \App\Api\V1\Requests\CRMRequests\EmployeeCreateRequest $request
      * @return \Illuminate\Http\Response
      */
     public function create(EmployeeCreateRequest $request)
@@ -101,7 +100,7 @@ class EmployeeController extends Controller
     {
 
         $employee = Employee::where('id', $employee)->first();
-        $employee->permanentAddress;
+        $employee->addresses;
         return response()->json([
             'status' => true,
             'data' => $employee,

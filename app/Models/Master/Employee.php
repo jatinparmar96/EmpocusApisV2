@@ -17,9 +17,13 @@ class Employee extends Model
     protected $casts = [
         'employee_contact_numbers' => 'array',
     ];
-    public function permanentAddress()
+    public function permanent_address()
     {
         return $this->addresses()->where('meta', 'PermanentAddress');
+    }
+    public function residential_address()
+    {
+        return $this->addresses()->where('meta', 'ResidentialAddress');
     }
     public function addresses()
     {
