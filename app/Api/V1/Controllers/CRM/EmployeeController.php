@@ -20,7 +20,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::with(['permanent_address','residential_address'])->paginate();
+        $employees = Employee::with(['permanent_address','residential_address'])->paginate(2);
         return response()->json([
             'status' => true,
             'data' => $employees,
@@ -99,8 +99,7 @@ class EmployeeController extends Controller
     public function show($employee)
     {
 
-        $employee = Employee::where('id', $employee)->first();
-        $employee->addresses;
+        $employee = Employee::with(['permanent_address','residential_address'])->where('id', $employee)->first();
         return response()->json([
             'status' => true,
             'data' => $employee,
