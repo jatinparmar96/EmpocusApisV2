@@ -20,7 +20,8 @@ class EmployeeController extends Controller
      */
     public function index($items=10)
     {
-        $employees = Employee::with(['permanent_address', 'residential_address'])->paginate($items);
+//        $employees = Employee::with(['permanent_address', 'residential_address'])->paginate($items);
+        $employees = $this->search()->paginate($items);
         return response()->json([
             'status' => true,
             'data' => $employees,
@@ -28,6 +29,24 @@ class EmployeeController extends Controller
         ]);
     }
 
+    function search()
+    {
+        $employee = Employee::with(['permanent_address', 'residential_address']);
+        $search = \Request::get('search');
+
+       if ($search !== null && $search !=='')
+       {
+           foreach ($search as $param=>$key)
+           {
+               if ($key !=='' && $key !==null && $key !=="undefined")
+               {
+                $employee = $employee->Orwhere($param,'LIKE',"%".$key."%");
+               }
+           }
+       }
+
+        return $employee;
+    }
     /**
      * Show the form for creating a new resource.
      * @param \App\Api\V1\Requests\CRMRequests\EmployeeCreateRequest $request

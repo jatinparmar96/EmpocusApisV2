@@ -9,8 +9,8 @@ class EmployeeObserver
 {
     public function creating(Employee $employee)
     {
-        $employee->created_by = Auth::user()->id;
-        $employee->updated_by = Auth::user()->id;
+//        $employee->created_by = Auth::user()->id;
+//        $employee->updated_by = Auth::user()->id;
     }
     /**
      * Handle the employee "created" event.

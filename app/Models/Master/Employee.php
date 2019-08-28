@@ -66,4 +66,6 @@ class Employee extends Model
     {
         return $this->morphMany('App\Models\Master\Address', 'addressable');
     }
+
+
 }
