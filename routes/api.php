@@ -33,6 +33,15 @@ $api->version('v1', function (Router $api) {
                 ]);
             }
         ]);
+        $api->group(['prefix'=>'master'],function (Router $api) {
+            $api->group(['prefix' => 'product'], function (Router $api) {
+                $api->post('', 'App\\Api\\V1\\Controllers\\Master\\ProductController@create');
+                $api->get('', 'App\\Api\\V1\\Controllers\\Master\\ProductController@index');
+                $api->get('full_list', 'App\\Api\\V1\\Controllers\\Master\\ProductController@full_index');
+                $api->get('{product}', 'App\\Api\\V1\\Controllers\\Master\\ProductController@show');
+
+            });
+        });
         $api->group(['prefix' => 'crm'], function (Router $api) {
             $api->group(['prefix' => 'employee'], function (Router $api) {
 
