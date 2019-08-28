@@ -27,7 +27,7 @@ class ProductController extends Controller
     function search(){
         $product = Product::query();
         $search = \Request::get('search');
-        
+
         if ($search !== null && $search !=='')
         {
             foreach ($search as $param=>$key)
