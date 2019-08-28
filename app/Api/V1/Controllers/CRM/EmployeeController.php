@@ -15,12 +15,12 @@ class EmployeeController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     * @param  $items
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($items=10)
     {
-        $employees = Employee::with(['permanent_address','residential_address'])->paginate(2);
+        $employees = Employee::with(['permanent_address', 'residential_address'])->paginate($items);
         return response()->json([
             'status' => true,
             'data' => $employees,
@@ -35,16 +35,14 @@ class EmployeeController extends Controller
      */
     public function create(EmployeeCreateRequest $request)
     {
-        $employee = '';
-
         try {
             if ($request->id == 'new') {
-                $employee =  $this->store($request);
+                $employee = $this->store($request);
                 return response()->json([
                     'status' => true,
                     'data' => $employee,
                     'message' => 'Employee Stored Successfully'
-                ]);
+                ],201);
             } else {
                 $employee = $this->update($request, $request->id);
                 return response()->json([
@@ -62,44 +60,53 @@ class EmployeeController extends Controller
                     'message' => 'Something Went Wrong'
                 ], 500);
             }
+            else{
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Something Went Wrong'
+                ], 500);
+            }
         }
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @return \App\Models\Master\Employee
+     *
+     * @throws \Exception
      */
     public function store(Request $request)
     {
-
+        \DB::beginTransaction();
         $employee = new Employee();
-        $employee->company_id = Auth::user()->company->id;
-        $employee->employee_name = $request->employee_name;
-        $employee->employee_adhaar_number = $request->adhar_number;
-        $employee->employee_pan_number = $request->pan_number;
-        $employee->employee_contact_numbers = $request->contact_numbers;
-        $employee->email = $request->email;
-        $employee->save();
-        $addressController = new AddressController();
-        $addressController->store($request->permanent_address, 'App\Models\Master\Employee', $employee->id, "PermanentAddress");
-        $addressController->store($request->residential_address, 'App\Models\Master\Employee', $employee->id, "ResidentialAddress");
-        $employee->permanentAddress = $employee->permanentAddress;
+        $employee = $this->populateEmployeeModel($employee,$request);
 
+        try {
+            $employee->save();
+            $addresses = collect([])->push($request->residential_address)->push($request->permanent_address)->toArray();
+            $employee->addresses()->createMany($addresses);
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            \DB::rollBack();
+            throw new Exception($e->getMessage());
+        }
+        \DB::commit();
+        $employee->addresses;
         return $employee;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($employee)
     {
 
-        $employee = Employee::with(['permanent_address','residential_address'])->where('id', $employee)->first();
+        $employee = Employee::with(['permanent_address', 'residential_address'])->where('id', $employee)->first();
         return response()->json([
             'status' => true,
             'data' => $employee,
@@ -107,37 +114,63 @@ class EmployeeController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function full_index()
     {
-        //
+        $employees = Employee::with(['permanent_address', 'residential_address'])->get();
+        return response()->json([
+            'status' => true,
+            'data' => $employees,
+            'message' => 'Employees Full List Retrieved Successfully'
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
+     * @throws
      */
     public function update(Request $request, $id)
     {
-        //
+        $employee = Employee::findOrFail($id);
+        $employee = $this->populateEmployeeModel($employee,$request);
+        \DB::beginTransaction();
+        try{
+            $employee->permanent_address()->update($request->permanent_address);
+            $employee->residential_address()->update($request->residential_address);
+            $employee->save();
+        }
+        catch (Exception $e)
+        {
+            Log::error($e->getMessage());
+            \DB::rollBack();
+            throw  new Exception($e->getMessage());
+        }
+        \DB::commit();
+        $employee->addresses;
+        return $employee;
+
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    function populateEmployeeModel(Employee $employee, Request $request)
     {
-        //
+        $employee->company_id = Auth::user()->company->id;
+        $employee->employee_name = $request->employee_name;
+        $employee->employee_username = $request->employee_username;
+        $employee->employee_adhaar_number = $request->employee_adhaar_number;
+        $employee->employee_pan_number = $request->employee_pan_number;
+        $employee->employee_contact_numbers = $request->employee_contact_numbers;
+
+        $employee->email = $request->email;
+        $employee->bank_name = $request->bank_name;
+        $employee->bank_account_number = $request->bank_account_number;
+        $employee->ifsc_code = $request->ifsc_code;
+        $employee->provident_fund_account_number = $request->provident_fund_account_number;
+
+        return $employee;
     }
+
+
 }

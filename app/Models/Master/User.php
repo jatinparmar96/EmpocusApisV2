@@ -16,6 +16,25 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User query()
  * @mixin \Eloquent
+ * @property int $id
+ * @property string $name
+ * @property string $display_name
+ * @property string $email
+ * @property string $mobile
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Master\Company[] $companies
+ * @property-read \App\Models\Master\Company $company
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Master\User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Master\User whereDisplayName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Master\User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Master\User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Master\User whereMobile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Master\User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Master\User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Master\User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Master\User whereUpdatedAt($value)
  */
 class User extends Authenticatable implements JWTSubject
 {

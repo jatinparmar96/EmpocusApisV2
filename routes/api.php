@@ -38,7 +38,10 @@ $api->version('v1', function (Router $api) {
 
                 $api->post('', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@create');
                 $api->get('', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@index');
+                $api->get('full_list', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@full_index');
                 $api->get('{employee}', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@show');
+
+
             });
         });
     });

@@ -18,7 +18,7 @@ class CreateAddressesTable extends Migration
 
             $table->integer('addressable_id');
             $table->string('addressable_type');
-            $table->string('meta');
+            $table->string('meta')->nullable();
             $table->string('address_line_1');
             $table->string('address_line_2');
             $table->string('city');
