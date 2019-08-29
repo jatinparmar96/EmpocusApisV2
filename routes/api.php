@@ -43,14 +43,20 @@ $api->version('v1', function (Router $api) {
             });
         });
         $api->group(['prefix' => 'crm'], function (Router $api) {
-            $api->group(['prefix' => 'employee'], function (Router $api) {
 
+            $api->group(['prefix' => 'employee'], function (Router $api) {
                 $api->post('', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@create');
+                $api->post('some-details', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@columns');
                 $api->get('', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@index');
                 $api->get('full_list', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@full_index');
                 $api->get('{employee}', 'App\\Api\\V1\\Controllers\\CRM\\EmployeeController@show');
+            });
 
-
+            $api->group(['prefix' => 'lead'], function (Router $api) {
+                $api->post('', 'App\\Api\\V1\\Controllers\\CRM\\LeadController@create');
+                $api->get('', 'App\\Api\\V1\\Controllers\\CRM\\LeadController@index');
+                $api->get('full_list', 'App\\Api\\V1\\Controllers\\CRM\\LeadController@full_index');
+                $api->get('{lead}', 'App\\Api\\V1\\Controllers\\CRM\\LeadController@show');
             });
         });
     });

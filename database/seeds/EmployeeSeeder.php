@@ -14,7 +14,7 @@ class EmployeeSeeder extends Seeder
         $faker = Faker\Factory::create();
         $faker->seed();
         $employees = collect();
-        for ($i = 0; $i < 10000; $i++) {
+        for ($i = 0; $i < 1000; $i++) {
             $employee = new \App\Models\Master\Employee();
             $employee->company_id = 1;
             $employee->employee_name = $faker->name;

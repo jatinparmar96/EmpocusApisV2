@@ -40,5 +40,31 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Lead extends Model
 {
-    //
+    protected $guarded = [
+        'id'
+    ];
+    protected $casts = [
+        'company_info' => 'array',
+        'social' => 'array',
+        'deal' => 'array',
+        'source_info' => 'array',
+    ];
+
+    public function contacts()
+    {
+        return $this->morphMany('App\Models\Master\Contact', 'contactable');
+    }
+
+    public function address()
+    {
+        return $this->morphOne('App\Models\Master\Address', 'addressable');
+    }
+
+    public function  setAssignedToAttribute($value){
+        $this->attributes['assigned_to']= $value['id'];
+    }
+
+    public function  setProductAttribute($value){
+        $this->attributes['product']= $value['id'];
+    }
 }

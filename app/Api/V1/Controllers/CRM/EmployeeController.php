@@ -28,7 +28,6 @@ class EmployeeController extends Controller
             'message' => 'Employee Retrieved Successfully'
         ]);
     }
-
     function search()
     {
         $employee = Employee::with(['permanent_address', 'residential_address']);
@@ -135,7 +134,7 @@ class EmployeeController extends Controller
 
     public function full_index()
     {
-        $employees = Employee::with(['permanent_address', 'residential_address'])->get();
+        $employees = Employee::with(['permanent_address','residential_address'])->get();
         return response()->json([
             'status' => true,
             'data' => $employees,
@@ -191,5 +190,15 @@ class EmployeeController extends Controller
         return $employee;
     }
 
+    public function columns(Request $request)
+    {
+        $columns = array_keys($request->all());
+        $employees = Employee::select($columns)->get();
+        return response()->json([
+            'status' => true,
+            'data' => $employees,
+            'message' => 'Employees Retrieved Successfully'
+        ]);
+    }
 
 }

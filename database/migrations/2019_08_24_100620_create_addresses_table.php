@@ -19,11 +19,11 @@ class CreateAddressesTable extends Migration
             $table->integer('addressable_id');
             $table->string('addressable_type');
             $table->string('meta')->nullable();
-            $table->string('address_line_1');
-            $table->string('address_line_2');
-            $table->string('city');
-            $table->string('state');
-            $table->string('pincode');
+            $table->string('address_line_1')->nullable();
+            $table->string('address_line_2')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('pincode')->nullable();
 
             $table->timestamps();
         });

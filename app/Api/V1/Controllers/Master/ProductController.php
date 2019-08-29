@@ -28,7 +28,7 @@ class ProductController extends Controller
         $product = Product::query();
         $search = \Request::get('search');
 
-        if ($search !== null && $search !=='')
+        if ($search !== null && $search !=='' && is_array($search))
         {
             foreach ($search as $param=>$key)
             {
