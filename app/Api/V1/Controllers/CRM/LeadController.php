@@ -3,9 +3,8 @@
 namespace App\Api\V1\Controllers\CRM;
 
 use App\Api\V1\Requests\CRMRequests\LeadCreateRequest;
-use App\Models\Crm\Lead;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Crm\Lead;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -71,7 +70,7 @@ class LeadController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  LeadCreateRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(LeadCreateRequest $request)
@@ -114,11 +113,11 @@ class LeadController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  LeadCreateRequest $request
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(LeadCreateRequest $request, $id)
     {
         $lead = Lead::with(['contacts'])->findOrFail($id);
         $lead = $this->populateModel($lead, $request);
@@ -153,7 +152,6 @@ class LeadController extends Controller
         $lead->company_info = $request->company_info;
         $lead->social = $request->social;
         $lead->source_info = $request->source_info;
-
         return $lead;
     }
 
