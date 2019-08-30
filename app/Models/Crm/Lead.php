@@ -60,16 +60,18 @@ class Lead extends Model
         return $this->morphOne('App\Models\Master\Address', 'addressable');
     }
 
-    public function assigned()
+    public function assigned_to()
     {
-        return $this->hasOne('App\Models\Master\Employee','id','assigned_to');
+        return $this->hasOne('App\Models\Master\Employee', 'id', 'assigned_to');
     }
 
-    public function  setAssignedToAttribute($value){
-        $this->attributes['assigned_to']= $value['id'];
+    public function  setAssignedToAttribute($value)
+    {
+        $this->attributes['assigned_to'] = $value['id'];
     }
 
-    public function  setProductAttribute($value){
-        $this->attributes['product']= $value['id'];
+    public function  setProductAttribute($value)
+    {
+        $this->attributes['product'] = $value['id'];
     }
 }

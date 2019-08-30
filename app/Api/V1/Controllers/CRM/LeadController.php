@@ -17,7 +17,7 @@ class LeadController extends Controller
      */
     public function index()
     {
-        $leads = Lead::query()->with(['assigned'])->paginate(10);
+        $leads = Lead::query()->with(['assigned_to', 'contacts'])->paginate(10);
         return response()->json([
             'status' => true,
             'data' => $leads,
@@ -55,7 +55,7 @@ class LeadController extends Controller
                     'status' => false,
                     'error' => $e->getMessage(),
                     'message' => 'Something Went Wrong',
-                    'full_error'=>$e
+                    'full_error' => $e
                 ], 500);
             } else {
                 return response()->json([
@@ -153,5 +153,4 @@ class LeadController extends Controller
         $lead->source_info = $request->source_info;
         return $lead;
     }
-
 }
