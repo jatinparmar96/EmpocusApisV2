@@ -10,8 +10,8 @@ class LeadObserver
 
     public function creating(Lead $lead)
     {
-        $lead->created_by = Auth::user()->id;
-        $lead->updated_by = Auth::user()->id;
+//        $lead->created_by = Auth::user()->id;
+//        $lead->updated_by = Auth::user()->id;
     }
     /**
      * Handle the lead "created" event.
