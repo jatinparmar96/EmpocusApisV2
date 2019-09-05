@@ -21,9 +21,9 @@ class CreateTasksTable extends Migration
             $table->string('title');
             $table->dateTime('due_date');
             $table->text('description')->nullable();
+            $table->integer('is_done');
 
             $table->integer('lead_id')->references('id')->on('leads');
-            $table->integer('employee_id')->references('id')->on('employee');
 
             $table->timestamps();
             $table->integer('created_by')->references('id')->on('users');

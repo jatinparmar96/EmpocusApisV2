@@ -58,6 +58,13 @@ $api->version('v1', function (Router $api) {
                 $api->get('full_list', 'App\\Api\\V1\\Controllers\\CRM\\LeadController@full_index');
                 $api->get('{lead}', 'App\\Api\\V1\\Controllers\\CRM\\LeadController@show');
             });
+
+            $api->group(['prefix' => 'task'], function (Router $api) {
+                $api->post('', 'App\\Api\\V1\\Controllers\\CRM\\TaskController@create');
+                $api->get('', 'App\\Api\\V1\\Controllers\\CRM\\TaskController@index');
+                $api->get('full_list', 'App\\Api\\V1\\Controllers\\CRM\\TaskController@full_index');
+                $api->get('{task}', 'App\\Api\\V1\\Controllers\\CRM\\TaskController@show');
+            });
         });
     });
 });

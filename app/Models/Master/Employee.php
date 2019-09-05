@@ -67,5 +67,9 @@ class Employee extends Model
         return $this->morphMany('App\Models\Master\Address', 'addressable');
     }
 
+    public  function tasks()
+    {
+        return $this->hasManyThrough('App\Models\Crm\Task','App\Models\Crm\Lead','assigned_to','lead_id','id','id');
+    }
 
 }

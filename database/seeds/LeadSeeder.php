@@ -19,7 +19,7 @@ class LeadSeeder extends Seeder
             $lead->company_id = 1;
             $lead->company_name = $faker->domainName();
             $lead->source = $faker->randomElement(['web', 'email']);
-            $lead->assigned_to = ['id' => $faker->numberBetween(1, 999)];
+            $lead->assigned_to = ['id' => $faker->numberBetween(1, 50)];
             $lead->lead_status = $faker->randomElement(['new', 'contacted', 'interested', 'demo', 'under_review', 'unqualified']);
             $lead->product = ['id' => $faker->numberBetween(1, 9)];
 
@@ -33,7 +33,7 @@ class LeadSeeder extends Seeder
                 ],
                 [
                     "name" => $faker->name(),
-                    "email  " => $faker->email,
+                    "email" => $faker->email,
                     "designation" => "Co-Founder",
                     "primary_contact_number" => $faker->phoneNumber,
                     "secondary_contact_number" => $faker->phoneNumber

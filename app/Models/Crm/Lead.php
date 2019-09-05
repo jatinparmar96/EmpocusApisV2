@@ -2,6 +2,7 @@
 
 namespace App\Models\Crm;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -62,15 +63,30 @@ class Lead extends Model
 
     public function assigned_to()
     {
-        return $this->hasOne('App\Models\Master\Employee', 'id', 'assigned_to');
+        return $this->hasOne('\App\Models\Master\Employee', 'id', 'assigned_to');
     }
 
-    public function  setAssignedToAttribute($value)
+    public function tasks()
+    {
+        return $this->hasMany('App\Models\Crm\Task', 'lead_id');
+    }
+
+    public function dueTasks()
+    {
+        return $this->tasks()->where('due_date', '<', Carbon::today());
+    }
+
+    public function pendingTaskClose()
+    {
+        return $this->tasks()->where('due_date', '=', Carbon::tomorrow());
+    }
+
+    public function setAssignedToAttribute($value)
     {
         $this->attributes['assigned_to'] = $value['id'];
     }
 
-    public function  setProductAttribute($value)
+    public function setProductAttribute($value)
     {
         $this->attributes['product'] = $value['id'];
     }

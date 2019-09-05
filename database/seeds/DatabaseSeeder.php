@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductSeeder::class);
         $this->call(EmployeeSeeder::class);
         $this->call(LeadSeeder::class);
+        $this->call(TaskSeeder::class);
         DB::commit();
     }
 }

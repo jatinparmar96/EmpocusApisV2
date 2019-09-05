@@ -15,17 +15,53 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        $tasks = Task::with(['lead'])->paginate();
+        return response()->json([
+            'status' => true,
+            'data' => $tasks,
+            'message' => 'Tasks retrieved Successfully'
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
-     *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        try {
+            if ($request->id == 'new') {
+                $lead = $this->store($request);
+                return response()->json([
+                    'status' => true,
+                    'data' => $lead,
+                    'message' => 'Task Stored Successfully'
+                ], 201);
+            } else {
+                $lead = $this->update($request, $request->id);
+                return response()->json([
+                    'status' => true,
+                    'data' => $lead,
+                    'message' => 'Task Updated Successfully'
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::info($e->getMessage());
+            if (env('APP_DEBUG')) {
+                return response()->json([
+                    'status' => false,
+                    'error' => $e->getMessage(),
+                    'message' => 'Something Went Wrong',
+                    'full_error' => $e
+                ], 500);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Something Went Wrong'
+                ], 500);
+            }
+        }
     }
 
     /**
@@ -36,7 +72,10 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $task = new Task();
+        $task = $this->populateModel($task,$request);
+        $task->save();
+        return $task;
     }
 
     /**
@@ -82,5 +121,18 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         //
+    }
+
+    function populateModel(Task $task, Request $request)
+    {
+        $task->title = $request->title;
+        $task->due_date = $request->due_date;
+        $task->description = $request->description;
+        $task->lead_id = $request->lead_id;
+        $task->is_done = false;
+
+        $task->created_by = \Auth::user()->id;
+        $task->updated_by = \Auth::user()->id;
+        return $task;
     }
 }

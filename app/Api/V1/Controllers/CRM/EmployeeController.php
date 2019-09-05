@@ -124,7 +124,7 @@ class EmployeeController extends Controller
     public function show($employee)
     {
 
-        $employee = Employee::with(['permanent_address', 'residential_address'])->where('id', $employee)->first();
+        $employee = Employee::with(['permanent_address', 'residential_address','tasks'])->where('id', $employee)->first();
         return response()->json([
             'status' => true,
             'data' => $employee,
