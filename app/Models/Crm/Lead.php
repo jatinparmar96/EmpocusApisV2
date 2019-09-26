@@ -3,7 +3,10 @@
 namespace App\Models\Crm;
 
 use Carbon\Carbon;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Crm\Lead
@@ -66,21 +69,78 @@ class Lead extends Model
         return $this->hasOne('\App\Models\Master\Employee', 'id', 'assigned_to');
     }
 
-    public function tasks()
+
+
+    /**
+     * -----------------------------------------------------------------------------------------------------------------
+     * Task Related Functions of Lead
+     * -----------------------------------------------------------------------------------------------------------------
+     **/
+
+    /**
+     * ------------------------------
+     * @return HasMany
+     * Return all pending tasks related to Lead
+     * ------------------------------
+     **/
+
+    public function pending_tasks()
     {
-        return $this->hasMany('App\Models\Crm\Task', 'lead_id');
+        return $this->hasMany('App\Models\Crm\Task', 'lead_id')->where('is_done', false);
     }
 
+    /**
+     * ------------------------------
+     * @return HasMany
+     * Return Tasks not completed tasks and missed deadlines
+     * ------------------------------
+     **/
     public function dueTasks()
     {
-        return $this->tasks()->where('due_date', '<', Carbon::today());
+        return $this->pending_tasks()->where('due_date', '<', Carbon::today());
     }
 
+
+    /**
+     * ------------------------------
+     * @return HasMany
+     * Return Tasks not completed tasks and deadline is within 2 days Not Including Today's Tasks
+     * ------------------------------
+     **/
     public function pendingTaskClose()
     {
-        return $this->tasks()->where('due_date', '=', Carbon::tomorrow());
+        $from = Carbon::today()->addDay();
+        $to = $from->copy()->addDays(2);
+       
+        return $this->pending_tasks()->whereBetween('due_date',[$from,$to]);
     }
 
+    /**
+     * ------------------------------
+     * @return HasMany
+     * Return Tasks not completed tasks and deadline is today
+     * ------------------------------
+     **/
+    public function pendingTaskToday(){
+        return $this->pending_tasks()->where('due_date', '=', Carbon::today());
+    }
+
+    /**
+     * ------------------------------
+     * @return HasMany
+     * Return Tasks not completed tasks and deadline is today
+     * ------------------------------
+     **/
+    public function completedTasks(){
+        return $this->hasMany('App\Models\Crm\Task', 'lead_id')->where('is_done', true);
+    }
+
+
+    /**
+     * -----------------------------------------------------------------------------------------------------------------
+     * Task Related Accessors and Mutators
+     * -----------------------------------------------------------------------------------------------------------------
+     **/
     public function setAssignedToAttribute($value)
     {
         $this->attributes['assigned_to'] = $value['id'];

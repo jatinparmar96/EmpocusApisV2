@@ -45,6 +45,7 @@ class Address extends Model
         'address_line_2',
         'city',
         'state',
+        'country',
         'pincode',
     ];
 

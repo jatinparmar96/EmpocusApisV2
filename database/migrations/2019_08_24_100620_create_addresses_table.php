@@ -23,6 +23,7 @@ class CreateAddressesTable extends Migration
             $table->string('address_line_2')->nullable();
             $table->string('city')->nullable();
             $table->string('state')->nullable();
+            $table->string('country')->nullable();
             $table->string('pincode')->nullable();
 
             $table->timestamps();

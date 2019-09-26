@@ -18,8 +18,8 @@ class CreateTasksTable extends Migration
             /**
              * Task Main Fields
              */
-            $table->string('title');
-            $table->dateTime('due_date');
+            $table->enum('task_type',['calling','meeting','follow_up','send_quotation','order_generated']);
+            $table->date('due_date');
             $table->text('description')->nullable();
             $table->integer('is_done');
 

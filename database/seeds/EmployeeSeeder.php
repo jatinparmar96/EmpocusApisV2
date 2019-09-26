@@ -36,7 +36,7 @@ class EmployeeSeeder extends Seeder
             $residentialAddress->city = $faker->city;
             $residentialAddress->state =$faker->city;
             $residentialAddress->pincode = $faker->randomNumber();
-//            $residentialAddress->country = $faker->country;
+           $residentialAddress->country = $faker->country;
             $residentialAddress->meta = "ResidentialAddress";
             $employee->residential_address()->save($residentialAddress);
             $permanentAddress = new \App\Models\Master\Address();
@@ -44,9 +44,9 @@ class EmployeeSeeder extends Seeder
             $permanentAddress->address_line_2= $faker->address;
             $permanentAddress->city = $faker->city;
             $permanentAddress->state =$faker->city;
+            
             $permanentAddress->pincode = $faker->randomNumber();
-
-//            $permanentAddress->country = $faker->country;
+           $permanentAddress->country = $faker->country;
             $permanentAddress->meta = "PermanentAddress";
             $employee->permanent_address()->save($permanentAddress);
 

@@ -2,23 +2,24 @@
 
 namespace App\Api\V1\Controllers\CRM;
 
-use App\Api\V1\Controllers\Master\AddressController;
+
 use App\Api\V1\Requests\CRMRequests\EmployeeCreateRequest;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Master\Employee;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class EmployeeController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      * @param  $items
      * @return \Illuminate\Http\Response
      */
-    public function index($items=10)
+    public function index($items = 10)
     {
 //        $employees = Employee::with(['permanent_address', 'residential_address'])->paginate($items);
         $employees = $this->search()->paginate($items);
@@ -28,24 +29,23 @@ class EmployeeController extends Controller
             'message' => 'Employee Retrieved Successfully'
         ]);
     }
+
     function search()
     {
         $employee = Employee::with(['permanent_address', 'residential_address']);
         $search = \Request::get('search');
 
-       if ($search !== null && $search !=='')
-       {
-           foreach ($search as $param=>$key)
-           {
-               if ($key !=='' && $key !==null && $key !=="undefined")
-               {
-                $employee = $employee->Orwhere($param,'LIKE',"%".$key."%");
-               }
-           }
-       }
+        if ($search !== null && $search !== '') {
+            foreach ($search as $param => $key) {
+                if ($key !== '' && $key !== null && $key !== "undefined") {
+                    $employee = $employee->Orwhere($param, 'LIKE', "%" . $key . "%");
+                }
+            }
+        }
 
         return $employee;
     }
+
     /**
      * Show the form for creating a new resource.
      * @param \App\Api\V1\Requests\CRMRequests\EmployeeCreateRequest $request
@@ -60,7 +60,7 @@ class EmployeeController extends Controller
                     'status' => true,
                     'data' => $employee,
                     'message' => 'Employee Stored Successfully'
-                ],201);
+                ], 201);
             } else {
                 $employee = $this->update($request, $request->id);
                 return response()->json([
@@ -77,8 +77,7 @@ class EmployeeController extends Controller
                     'error' => $e->getMessage(),
                     'message' => 'Something Went Wrong'
                 ], 500);
-            }
-            else{
+            } else {
                 return response()->json([
                     'status' => false,
                     'message' => 'Something Went Wrong'
@@ -99,7 +98,7 @@ class EmployeeController extends Controller
     {
         \DB::beginTransaction();
         $employee = new Employee();
-        $employee = $this->populateEmployeeModel($employee,$request);
+        $employee = $this->populateEmployeeModel($employee, $request);
 
         try {
             $employee->save();
@@ -113,63 +112,6 @@ class EmployeeController extends Controller
         \DB::commit();
         $employee->addresses;
         return $employee;
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($employee)
-    {
-
-        $employee = Employee::with(['permanent_address', 'residential_address','tasks'])->where('id', $employee)->first();
-        return response()->json([
-            'status' => true,
-            'data' => $employee,
-            'message' => 'Employee Retrieved Successfully'
-        ]);
-    }
-
-    public function full_index()
-    {
-        $employees = Employee::with(['permanent_address','residential_address'])->get();
-        return response()->json([
-            'status' => true,
-            'data' => $employees,
-            'message' => 'Employees Full List Retrieved Successfully'
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     * @throws
-     */
-    public function update(Request $request, $id)
-    {
-        $employee = Employee::findOrFail($id);
-        $employee = $this->populateEmployeeModel($employee,$request);
-        \DB::beginTransaction();
-        try{
-            $employee->permanent_address()->update($request->permanent_address);
-            $employee->residential_address()->update($request->residential_address);
-            $employee->save();
-        }
-        catch (Exception $e)
-        {
-            Log::error($e->getMessage());
-            \DB::rollBack();
-            throw  new Exception($e->getMessage());
-        }
-        \DB::commit();
-        $employee->addresses;
-        return $employee;
-
     }
 
     function populateEmployeeModel(Employee $employee, Request $request)
@@ -188,6 +130,61 @@ class EmployeeController extends Controller
         $employee->provident_fund_account_number = $request->provident_fund_account_number;
 
         return $employee;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     * @throws
+     */
+    public function update(Request $request, $id)
+    {
+        $employee = Employee::findOrFail($id);
+        $employee = $this->populateEmployeeModel($employee, $request);
+        \DB::beginTransaction();
+        try {
+            $employee->permanent_address()->update($request->permanent_address);
+            $employee->residential_address()->update($request->residential_address);
+            $employee->save();
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            \DB::rollBack();
+            throw  new Exception($e->getMessage());
+        }
+        \DB::commit();
+        $employee->addresses;
+        return $employee;
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($employee)
+    {
+
+        $employee = Employee::with(['permanent_address', 'residential_address', 'tasks'])->where('id', $employee)->first();
+        return response()->json([
+            'status' => true,
+            'data' => $employee,
+            'message' => 'Employee Retrieved Successfully'
+        ]);
+    }
+
+    public function full_index()
+    {
+        $employees = Employee::with(['permanent_address', 'residential_address'])->get();
+        return response()->json([
+            'status' => true,
+            'data' => $employees,
+            'message' => 'Employees Full List Retrieved Successfully'
+        ]);
     }
 
     public function columns(Request $request)
