@@ -17,7 +17,14 @@ class LeadController extends Controller
      */
     public function index()
     {
-        $leads = Lead::query()->with(['assigned_to', 'contact_persons', 'tasks', 'dueTasks', 'pendingTaskClose'])->withCount('tasks')->paginate(10);
+        $leads = Lead::query()->with([
+            'assigned_to',
+            'contacts',
+            'dueTasks',
+            'pendingTaskClose',
+            'pendingTaskToday',
+            'completedTasks'
+        ])->withCount('pending_tasks')->paginate(10);
         return response()->json([
             'status' => true,
             'data' => $leads,
@@ -97,7 +104,7 @@ class LeadController extends Controller
      */
     public function show($id)
     {
-        $lead = Lead::with(['assigned_to', 'contact_persons', 'tasks', 'address'])->findOrFail($id);
+        $lead = Lead::with(['assigned', 'contacts'])->findOrFail($id);
         return response()->json([
             'status' => true,
             'data' => $lead,

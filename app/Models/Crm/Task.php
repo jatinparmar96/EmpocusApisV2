@@ -20,4 +20,15 @@ class Task extends Model
         $due_date = $value['year'].'/'.$value['month'].'/'.$value['day'];
         $this->attributes['due_date'] = $due_date;
     }
+    public function getTaskTypeAttribute($task_type){
+       $fullType = '';
+        switch ($task_type){
+            case 'calling':$fullType = "Calling";break;
+            case 'meeting':$fullType = "Meeting/Appointment";break;
+            case 'follow_up':$fullType = "Follow Up";break;
+            case 'send_quotation':$fullType = "Send Quotation";break;
+            case 'order_generated':$fullType = "Order Generated";break;
+        }
+        return ['task_type'=>$task_type,'full_type'=>$fullType];
+    }
 }

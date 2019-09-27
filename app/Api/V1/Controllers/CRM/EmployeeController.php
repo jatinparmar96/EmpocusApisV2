@@ -3,16 +3,17 @@
 namespace App\Api\V1\Controllers\CRM;
 
 use App\Api\V1\Requests\CRMRequests\EmployeeCreateRequest;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Master\Employee;
 use Error;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class EmployeeController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      * @param  $items
@@ -28,6 +29,7 @@ class EmployeeController extends Controller
             'message' => 'Employee Retrieved Successfully'
         ]);
     }
+
     function search()
     {
         $employee = Employee::with(['permanent_address', 'residential_address']);
@@ -43,6 +45,7 @@ class EmployeeController extends Controller
 
         return $employee;
     }
+
     /**
      * Show the form for creating a new resource.
      * @param \App\Api\V1\Requests\CRMRequests\EmployeeCreateRequest $request
@@ -97,11 +100,6 @@ class EmployeeController extends Controller
         \DB::beginTransaction();
         $employee = new Employee();
         $employee = $this->populateEmployeeModel($employee, $request);
-        if ($request->hasFile('aadhar_img')) {
-            $employee->aadhar_img = $request->file('aadhar_img')->store('aadhar_img');
-        }
-        $employee->created_by = Auth::user()->id;
-        $employee->updated_by = Auth::user()->id;
         try {
             $employee->save();
             $addresses = collect([])->push($request->residential_address)->push($request->permanent_address)->toArray();
@@ -110,6 +108,51 @@ class EmployeeController extends Controller
             Log::error($e->getMessage());
             \DB::rollBack();
             throw new Exception($e->getMessage());
+        }
+        \DB::commit();
+        $employee->addresses;
+        return $employee;
+    }
+
+    function populateEmployeeModel(Employee $employee, Request $request)
+    {
+        $employee->company_id = Auth::user()->company->id;
+        $employee->employee_name = $request->employee_name;
+        $employee->employee_username = $request->employee_username;
+        $employee->employee_adhaar_number = $request->employee_adhaar_number;
+        $employee->employee_pan_number = $request->employee_pan_number;
+        $employee->employee_contact_numbers = $request->employee_contact_numbers;
+
+        $employee->email = $request->email;
+        $employee->bank_name = $request->bank_name;
+        $employee->bank_account_number = $request->bank_account_number;
+        $employee->ifsc_code = $request->ifsc_code;
+        $employee->provident_fund_account_number = $request->provident_fund_account_number;
+
+        return $employee;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     * @throws
+     */
+    public function update(Request $request, $id)
+    {
+        $employee = Employee::findOrFail($id);
+        $employee = $this->populateEmployeeModel($employee, $request);
+        \DB::beginTransaction();
+        try {
+            $employee->permanent_address()->update($request->permanent_address);
+            $employee->residential_address()->update($request->residential_address);
+            $employee->save();
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            \DB::rollBack();
+            throw  new Exception($e->getMessage());
         }
         \DB::commit();
         $employee->addresses;
@@ -141,60 +184,6 @@ class EmployeeController extends Controller
             'data' => $employees,
             'message' => 'Employees Full List Retrieved Successfully'
         ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     * @throws
-     */
-    public function update(Request $request, $id)
-    {
-        $employee = Employee::findOrFail($id);
-        $employee = $this->populateEmployeeModel($employee, $request);
-        if ($request->hasFile($request->aadhar_img)) {
-            if ($employee->aadhar_img == null) {
-                $employee = $request->aadhar_img->store('aadhar_img');
-            }
-        } else {
-            throw new Exception("No FIle" . $request->aadhar_img);
-        }
-
-        \DB::beginTransaction();
-        try {
-            $employee->permanent_address()->update($request->permanent_address);
-            $employee->residential_address()->update($request->residential_address);
-            $employee->save();
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-            \DB::rollBack();
-            throw  new Exception($e->getMessage());
-        }
-        \DB::commit();
-        $employee->addresses;
-        return $employee;
-    }
-
-    function populateEmployeeModel(Employee $employee, Request $request)
-    {
-        $employee->company_id = Auth::user()->company->id;
-        $employee->employee_name = $request->employee_name;
-        $employee->employee_username = $request->employee_username;
-        $employee->employee_adhaar_number = $request->employee_adhaar_number;
-        $employee->employee_pan_number = $request->employee_pan_number;
-        $employee->employee_contact_numbers = $request->employee_contact_numbers;
-
-        $employee->email = $request->email;
-        $employee->bank_name = $request->bank_name;
-        $employee->bank_account_number = $request->bank_account_number;
-        $employee->ifsc_code = $request->ifsc_code;
-        $employee->provident_fund_account_number = $request->provident_fund_account_number;
-
-
-        return $employee;
     }
 
     public function columns(Request $request)

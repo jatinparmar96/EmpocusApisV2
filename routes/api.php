@@ -64,6 +64,7 @@ $api->version('v1', function (Router $api) {
                 $api->get('', 'App\\Api\\V1\\Controllers\\CRM\\TaskController@index');
                 $api->get('full_list', 'App\\Api\\V1\\Controllers\\CRM\\TaskController@full_index');
                 $api->get('{task}', 'App\\Api\\V1\\Controllers\\CRM\\TaskController@show');
+                $api->get('markdone/{task}','App\\Api\\V1\\Controllers\\CRM\\TaskController@markDone');
             });
         });
     });

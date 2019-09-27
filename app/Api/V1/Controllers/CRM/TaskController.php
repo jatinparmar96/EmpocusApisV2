@@ -125,7 +125,6 @@ class TaskController extends Controller
 
     function populateModel(Task $task, Request $request)
     {
-        $task->title = $request->title;
         $task->due_date = $request->due_date;
         $task->description = $request->description;
         $task->lead_id = $request->lead_id;
@@ -134,5 +133,15 @@ class TaskController extends Controller
         $task->created_by = \Auth::user()->id;
         $task->updated_by = \Auth::user()->id;
         return $task;
+    }
+    public function markDone($task){
+        $task = Task::findOrFail($task);
+        $task->is_done = 1;
+        $task->save();
+        return response()->json([
+            'status' => true,
+            'data' => $task,
+            'message' => 'Task Updated Successfully'
+        ]);
     }
 }
