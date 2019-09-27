@@ -2,11 +2,11 @@
 
 namespace App\Api\V1\Controllers\CRM;
 
-use App\Api\V1\Controllers\Master\AddressController;
 use App\Api\V1\Requests\CRMRequests\EmployeeCreateRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Master\Employee;
+use Error;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -18,9 +18,9 @@ class EmployeeController extends Controller
      * @param  $items
      * @return \Illuminate\Http\Response
      */
-    public function index($items=10)
+    public function index($items = 10)
     {
-//        $employees = Employee::with(['permanent_address', 'residential_address'])->paginate($items);
+        //        $employees = Employee::with(['permanent_address', 'residential_address'])->paginate($items);
         $employees = $this->search()->paginate($items);
         return response()->json([
             'status' => true,
@@ -33,16 +33,13 @@ class EmployeeController extends Controller
         $employee = Employee::with(['permanent_address', 'residential_address']);
         $search = \Request::get('search');
 
-       if ($search !== null && $search !=='')
-       {
-           foreach ($search as $param=>$key)
-           {
-               if ($key !=='' && $key !==null && $key !=="undefined")
-               {
-                $employee = $employee->Orwhere($param,'LIKE',"%".$key."%");
-               }
-           }
-       }
+        if ($search !== null && $search !== '') {
+            foreach ($search as $param => $key) {
+                if ($key !== '' && $key !== null && $key !== "undefined") {
+                    $employee = $employee->Orwhere($param, 'LIKE', "%" . $key . "%");
+                }
+            }
+        }
 
         return $employee;
     }
@@ -60,7 +57,7 @@ class EmployeeController extends Controller
                     'status' => true,
                     'data' => $employee,
                     'message' => 'Employee Stored Successfully'
-                ],201);
+                ], 201);
             } else {
                 $employee = $this->update($request, $request->id);
                 return response()->json([
@@ -77,8 +74,7 @@ class EmployeeController extends Controller
                     'error' => $e->getMessage(),
                     'message' => 'Something Went Wrong'
                 ], 500);
-            }
-            else{
+            } else {
                 return response()->json([
                     'status' => false,
                     'message' => 'Something Went Wrong'
@@ -97,10 +93,15 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
+        //dd($request->all());
         \DB::beginTransaction();
         $employee = new Employee();
-        $employee = $this->populateEmployeeModel($employee,$request);
-
+        $employee = $this->populateEmployeeModel($employee, $request);
+        if ($request->hasFile('aadhar_img')) {
+            $employee->aadhar_img = $request->file('aadhar_img')->store('aadhar_img');
+        }
+        $employee->created_by = Auth::user()->id;
+        $employee->updated_by = Auth::user()->id;
         try {
             $employee->save();
             $addresses = collect([])->push($request->residential_address)->push($request->permanent_address)->toArray();
@@ -124,7 +125,7 @@ class EmployeeController extends Controller
     public function show($employee)
     {
 
-        $employee = Employee::with(['permanent_address', 'residential_address','tasks'])->where('id', $employee)->first();
+        $employee = Employee::with(['permanent_address', 'residential_address', 'tasks'])->where('id', $employee)->first();
         return response()->json([
             'status' => true,
             'data' => $employee,
@@ -134,7 +135,7 @@ class EmployeeController extends Controller
 
     public function full_index()
     {
-        $employees = Employee::with(['permanent_address','residential_address'])->get();
+        $employees = Employee::with(['permanent_address', 'residential_address'])->get();
         return response()->json([
             'status' => true,
             'data' => $employees,
@@ -153,15 +154,21 @@ class EmployeeController extends Controller
     public function update(Request $request, $id)
     {
         $employee = Employee::findOrFail($id);
-        $employee = $this->populateEmployeeModel($employee,$request);
+        $employee = $this->populateEmployeeModel($employee, $request);
+        if ($request->hasFile($request->aadhar_img)) {
+            if ($employee->aadhar_img == null) {
+                $employee = $request->aadhar_img->store('aadhar_img');
+            }
+        } else {
+            throw new Exception("No FIle" . $request->aadhar_img);
+        }
+
         \DB::beginTransaction();
-        try{
+        try {
             $employee->permanent_address()->update($request->permanent_address);
             $employee->residential_address()->update($request->residential_address);
             $employee->save();
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
             \DB::rollBack();
             throw  new Exception($e->getMessage());
@@ -169,7 +176,6 @@ class EmployeeController extends Controller
         \DB::commit();
         $employee->addresses;
         return $employee;
-
     }
 
     function populateEmployeeModel(Employee $employee, Request $request)
@@ -187,6 +193,7 @@ class EmployeeController extends Controller
         $employee->ifsc_code = $request->ifsc_code;
         $employee->provident_fund_account_number = $request->provident_fund_account_number;
 
+
         return $employee;
     }
 
@@ -200,5 +207,4 @@ class EmployeeController extends Controller
             'message' => 'Employees Retrieved Successfully'
         ]);
     }
-
 }

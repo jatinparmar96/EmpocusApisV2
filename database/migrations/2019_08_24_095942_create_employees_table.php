@@ -28,6 +28,7 @@ class CreateEmployeesTable extends Migration
             $table->string('bank_account_number')->nullable();
             $table->string('ifsc_code')->nullable();
             $table->string('provident_fund_account_number')->nullable();
+            $table->string('aadhar_img')->nullable();
 
             $table->timestamps();
             $table->integer('created_by')->references('id')->on('users');

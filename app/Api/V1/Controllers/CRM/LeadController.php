@@ -17,7 +17,7 @@ class LeadController extends Controller
      */
     public function index()
     {
-        $leads = Lead::query()->with(['assigned_to', 'contacts','tasks', 'dueTasks', 'pendingTaskClose'])->withCount('tasks')->paginate(10);
+        $leads = Lead::query()->with(['assigned_to', 'contact_persons', 'tasks', 'dueTasks', 'pendingTaskClose'])->withCount('tasks')->paginate(10);
         return response()->json([
             'status' => true,
             'data' => $leads,
@@ -77,13 +77,15 @@ class LeadController extends Controller
 
         $lead = new Lead();
         $lead = $this->populateModel($lead, $request);
+        $lead->created_by = Auth::user()->id;
+        $lead->updated_by = Auth::user()->id;
         $lead->save();
         if (array_filter($request->address) != []) {
             $lead->address()->create($request->address);
         }
-        $lead->contacts()->createMany($request->contact_persons);
+        $lead->contact_persons()->createMany($request->contact_persons);
         $lead->address;
-        $lead->contacts;
+        $lead->contact_persons;
         return $lead;
     }
 
@@ -95,7 +97,7 @@ class LeadController extends Controller
      */
     public function show($id)
     {
-        $lead = Lead::with(['assigned', 'contacts', 'tasks'])->findOrFail($id);
+        $lead = Lead::with(['assigned_to', 'contact_persons', 'tasks', 'address'])->findOrFail($id);
         return response()->json([
             'status' => true,
             'data' => $lead,
@@ -123,14 +125,14 @@ class LeadController extends Controller
      */
     public function update(LeadCreateRequest $request, $id)
     {
-        $lead = Lead::with(['contacts'])->findOrFail($id);
+        $lead = Lead::with(['contact_persons'])->findOrFail($id);
         $lead = $this->populateModel($lead, $request);
         $lead->save();
         if (array_filter($request->address) != []) {
             $lead->address()->updateOrCreate($request->address);
         }
-        $lead->contacts()->delete();
-        $lead->contacts()->createMany($request->contact_persons);
+        $lead->contact_persons()->delete();
+        $lead->contact_persons()->createMany($request->contact_persons);
         return $lead;
     }
 
@@ -156,6 +158,7 @@ class LeadController extends Controller
         $lead->company_info = $request->company_info;
         $lead->social = $request->social;
         $lead->source_info = $request->source_info;
+        $lead->deal = $request->deal;
         return $lead;
     }
 }

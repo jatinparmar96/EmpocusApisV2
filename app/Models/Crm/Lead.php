@@ -51,7 +51,7 @@ class Lead extends Model
         'source_info' => 'array',
     ];
 
-    public function contacts()
+    public function contact_persons()
     {
         return $this->morphMany('App\Models\Master\Contact', 'contactable');
     }
