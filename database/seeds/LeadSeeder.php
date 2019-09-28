@@ -93,7 +93,7 @@ class LeadSeeder extends Seeder
             $lead->created_by = 1;
             $lead->updated_by = 1;
             $lead->save();
-            $lead->contacts()->createMany($contact_persons);
+            $lead->contact_persons()->createMany($contact_persons);
             $lead->address()->create($address);
         }
     }

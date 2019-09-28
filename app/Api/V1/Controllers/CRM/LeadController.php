@@ -19,7 +19,7 @@ class LeadController extends Controller
     {
         $leads = Lead::query()->with([
             'assigned_to',
-            'contacts',
+            'contact_persons',
             'dueTasks',
             'pendingTaskClose',
             'pendingTaskToday',
@@ -104,7 +104,7 @@ class LeadController extends Controller
      */
     public function show($id)
     {
-        $lead = Lead::with(['assigned', 'contacts'])->findOrFail($id);
+        $lead = Lead::with(['assigned', 'contact_persons'])->findOrFail($id);
         return response()->json([
             'status' => true,
             'data' => $lead,

@@ -14,11 +14,11 @@ class CompanySeeder extends Seeder
     {
         $company = new Company();
         $company->user_id = 1;
-        $company->company_name = "Rokso India Pvt Ltd";
-        $company->company_display_name = "Rokso Chemicals";
+        $company->name = "Rokso India Pvt Ltd";
+        $company->display_name = "Rokso Chemicals";
         $company->website = "www.rokso.com";
-        $company->created_by = 1;
-        $company->updated_by = 1;
+        $company->created_by_id = 1;
+        $company->updated_by_id = 1;
         $company->save();
     }
 }
