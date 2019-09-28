@@ -5,7 +5,6 @@ namespace App\Api\V1\Controllers\Masters;
 use App\Api\V1\Controllers\Authentication\TokenController;
 use App\Http\Controllers\Controller;
 use App\Models\Tax;
-use Illuminate\Support\Facades\DB;
 
 class TaxController extends Controller
 {
@@ -50,7 +49,6 @@ class TaxController extends Controller
     {
         $sort = \Request::get('sort');
         if (!empty($sort)) {
-            $TableColumn = $this->TableColumn();
             $query = $query->orderBy($sort->column, $sort->order);
         } else
             $query = $query->orderBy('tax_rate', 'ASC');
