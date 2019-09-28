@@ -14,10 +14,11 @@ class DatabaseSeeder extends Seeder
         DB::beginTransaction();
         $this->call(UserSeeder::class);
         $this->call(CompanySeeder::class);
+        $this->call(TaxTableSeeder::class);
 //        $this->call(ProductSeeder::class);
 //        $this->call(EmployeeSeeder::class);
 //        $this->call(LeadSeeder::class);
-     //   $this->call(TaskSeeder::class);
+//        $this->call(TaskSeeder::class);
         DB::commit();
     }
 }
