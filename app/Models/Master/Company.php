@@ -5,7 +5,7 @@ namespace App\Models\Master;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Master\Company
+ * App\Models\Masters\Company
  *
  * @property int $id
  * @property int $user_id

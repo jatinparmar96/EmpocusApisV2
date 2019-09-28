@@ -4,7 +4,7 @@ namespace App\Api\V1\Controllers\Masters;
 
 use App\Api\V1\Controllers\Authentication\TokenController;
 use App\Http\Controllers\Controller;
-use App\Model\LeadStatus;
+use App\Models\LeadStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;

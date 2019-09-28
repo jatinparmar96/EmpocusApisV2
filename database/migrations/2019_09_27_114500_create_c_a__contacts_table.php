@@ -13,7 +13,7 @@ class CreateCAContactsTable extends Migration
      */
     public function up()
     {
-        Schema::create('c_a__contacts', function (Blueprint $table) {
+        Schema::create('ca_contacts', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('ca_company_id');
             $table->string('ca_contact_first_name');
@@ -36,6 +36,6 @@ class CreateCAContactsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('c_a__contacts');
+        Schema::dropIfExists('ca_contacts');
     }
 }
