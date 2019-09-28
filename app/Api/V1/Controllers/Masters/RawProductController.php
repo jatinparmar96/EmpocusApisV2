@@ -4,7 +4,7 @@ namespace App\Api\V1\Controllers\Masters;
 
 use App\Api\V1\Controllers\Authentication\TokenController;
 use App\Http\Controllers\Controller;
-use App\Model\RawProduct;
+use App\Models\RawProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -66,15 +66,14 @@ class RawProductController extends Controller
             $raw->product_store_location = $request->get('product_store_location');
             $raw->product_category = $request->get('product_category');
             $raw->product_hsn = $request->get('product_hsn');
-            $raw->product_type = $request->get('product_type');
             $raw->updated_by_id = $user->id;
             try {
                 $raw->save();
             } catch (\Exception $e) {
+                dd($e);
                 $status = false;
                 $message = 'Something is wrong. Kindly Contact Admin' . $e;
             }
-            $raw = $this->query()->where('rp.id', $raw->id)->first();
             return response()->json([
                 'status' => $status,
                 'data' => $raw,
@@ -94,28 +93,8 @@ class RawProductController extends Controller
     public function query()
     {
         $current_company_id = TokenController::getCompanyId();
-        $query = DB::table('raw_products as rp')
-            ->leftJoin('unit_of_measurements as uom1', 'rp.product_uom', 'uom1.id')
-            ->leftJoin('unit_of_measurements as uom2', 'rp.product_conv_uom', 'uom2.id')
-            ->leftJoin('taxes as t', 'rp.product_gst_rate', 't.id')
-            ->leftJoin('product_categories as pc', 'rp.product_category', 'pc.id')
-            ->select(
-                'rp.id', 'rp.product_name', 'rp.product_display_name', 'rp.product_code',
-                'rp.product_conv_factor', 'rp.product_batch_type',
-                'rp.product_stock_ledger', 'rp.product_rate_pick',
-                'rp.product_purchase_rate', 'rp.product_mrp_rate',
-                'rp.product_sales_rate', 'rp.product_max_level', 'rp.product_min_level',
-                'rp.product_hsn', 'rp.product_description', 'rp.product_trade_name',
-                'rp.product_store_location', 'rp.product_type'
-            )
-            ->addSelect(DB::raw('IF(rp.product_batch_type = 1,"Yes","No") as product_batch_type'))
-            ->addSelect(DB::raw('IF(rp.product_stock_ledger = 1,"Yes","No") as product_stock_ledger'))
-            ->addSelect('uom1.id as product_uom', 'uom1.unit_name as product_uom_name')
-            ->addSelect('uom2.id as product_conv_uom', 'uom2.unit_name as product_conv_uom_name')
-            ->addSelect('t.id as product_gst_rate', 't.tax_name', 't.tax_rate')
-            ->addSelect('pc.id as product_category', 'pc.product_category_name')
-            ->where('rp.company_id', $current_company_id);
-        return $query;
+        return RawProduct::with(['uom','conv_uom','category','tax'])->where('company_id',$current_company_id);
+
     }
 
     public function query_extra($query)
@@ -132,7 +111,9 @@ class RawProductController extends Controller
     public function index()
     {
         $limit = 10;
+
         $query = $this->query();
+
         $query = $this->search($query);
         $query = $this->sort($query);
         $result = $query->paginate($limit);
@@ -151,7 +132,7 @@ class RawProductController extends Controller
             $TableColumn = $this->TableColumn();
             foreach ($search as $key => $searchvalue) {
                 if ($searchvalue !== '')
-                    $query = $query->Where($TableColumn[$key], 'LIKE', '%' . $searchvalue . '%');
+                    $query = $query->Where($key, 'LIKE', '%' . $searchvalue . '%');
             }
         }
 
@@ -175,7 +156,7 @@ class RawProductController extends Controller
             "gst_rate" => "rp.gst_rate",
             "max_level" => "rp.max_level",
             "min_level" => "rp.min _level",
-                "description" => "rp.description",
+            "description" => "rp.description",
         );
         return $TableColumn;
     }
@@ -187,9 +168,9 @@ class RawProductController extends Controller
         $sort = \Request::get('sort');
         if (!empty($sort)) {
             $TableColumn = $this->TableColumn();
-            $query = $query->orderBy($TableColumn[key($sort)], $sort[key($sort)]);
+            $query = $query->orderBy($sort->column, $sort->order);
         } else
-            $query = $query->orderBy('rp.product_display_name', 'ASC');
+            $query = $query->orderBy('product_display_name', 'ASC');
 
         return $query;
     }
@@ -213,7 +194,7 @@ class RawProductController extends Controller
         $query = $this->query();
         $query = $this->search($query);
         $query = $this->sort($query);
-        $result = $query->where('rp.id', $id)->first();
+        $result = $query->where('id', $id)->first();
         return response()->json([
             'status' => true,
             'status_code' => 200,
