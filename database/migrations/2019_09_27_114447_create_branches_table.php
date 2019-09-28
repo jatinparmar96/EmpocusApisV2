@@ -19,6 +19,7 @@ class CreateBranchesTable extends Migration
             $table->string('name');
             $table->string('gst_number');
             $table->string('code')->nullable();
+            $table->boolean('is_godown')->nullable();
             $table->timestamps();
             $table->integer('created_by_id');
             $table->integer('updated_by_id');

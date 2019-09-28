@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateBanksTable extends Migration
 {
@@ -15,8 +15,7 @@ class CreateBanksTable extends Migration
     {
         Schema::create('banks', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('bankable_id')->nullable();
-            $table->string('bankable_type')->nullable();
+            $table->integer('branch_id')->nullable();
 
             $table->string('account_name');
             $table->string('name');
