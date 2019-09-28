@@ -66,11 +66,11 @@ class RawProductController extends Controller
             $raw->product_store_location = $request->get('product_store_location');
             $raw->product_category = $request->get('product_category');
             $raw->product_hsn = $request->get('product_hsn');
+            $raw->product_type = $request->get('product_type');
             $raw->updated_by_id = $user->id;
             try {
                 $raw->save();
             } catch (\Exception $e) {
-                dd($e);
                 $status = false;
                 $message = 'Something is wrong. Kindly Contact Admin' . $e;
             }

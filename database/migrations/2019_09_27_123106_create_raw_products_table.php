@@ -25,11 +25,11 @@ class CreateRawProductsTable extends Migration
             $table->integer('product_conv_uom')->nullable();
             $table->double('product_conv_factor', 8, 2)->nullable();
             $table->boolean('product_batch_type');
-            $table->boolean('product_stock_ledger')->nullable();
+            $table->boolean('product_stock_ledger');
             $table->string('product_store_location')->nullable();
             $table->integer('product_opening_stock')->nullable();
             $table->double('opening_amount', 8, 2)->nullable();
-            $table->string('product_rate_pick');
+            $table->string('product_rate_pick')->nullable();
             $table->double('product_purchase_rate', 8, 2)->nullable();
             $table->double('product_mrp_rate', 8, 2)->nullable();
             $table->double('product_sales_rate', 8, 2)->nullable();
@@ -38,6 +38,9 @@ class CreateRawProductsTable extends Migration
             $table->integer('product_min_level')->nullable();
             $table->integer('product_reorder_level')->nullable();
             $table->string('product_hsn')->nullable();
+
+            $table->string('product_type')->nullable();
+
             $table->text('product_description')->nullable();
             $table->timestamps();
 
