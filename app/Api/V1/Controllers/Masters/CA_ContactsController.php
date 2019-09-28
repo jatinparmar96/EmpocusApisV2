@@ -4,10 +4,10 @@ namespace App\Api\V1\Controllers\Masters;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\Bank;
-use App\Model\Address;
+use App\Models\Bank;
+use App\Models\Address;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Model\CA_Contact;
+use App\Models\CA_Contact;
 use App\Api\V1\Controllers\Authentication\TokenController;
 
 class CA_ContactsController extends Controller{
@@ -19,7 +19,7 @@ class CA_ContactsController extends Controller{
         {
             $contact = new CA_Contact();
             $contact->created_by_id = TokenController::getUser()->id;
-            $contact->company_id= $account_id;
+            $contact->ca_company_id= $account_id;
         }
         else
         {

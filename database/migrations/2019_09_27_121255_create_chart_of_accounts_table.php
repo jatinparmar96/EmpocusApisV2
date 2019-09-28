@@ -22,7 +22,6 @@ class CreateChartOfAccountsTable extends Migration
             $table->string('ca_code');
             $table->string('ca_opening_amount');
             $table->string('ca_opening_type');
-            $table->string('address_id');
             $table->string('ca_pan');
             $table->string('ca_gstn');
             $table->string('ca_tan');

@@ -17,12 +17,12 @@ class CreateCAContactsTable extends Migration
             $table->increments('id');
             $table->integer('ca_company_id');
             $table->string('ca_contact_first_name');
-            $table->string('ca_contact_last_name');
-            $table->string('ca_contact_email');
+            $table->string('ca_contact_last_name')->nullable();
+            $table->string('ca_contact_email')->nullable();
             $table->string('ca_contact_mobile_number');
-            $table->string('ca_contact_alternate_mobile_number');
-            $table->string('ca_contact_designation');
-            $table->string('ca_contact_branch');
+            $table->string('ca_contact_alternate_mobile_number')->nullable();
+            $table->string('ca_contact_designation')->nullable();
+            $table->string('ca_contact_branch')->nullable();
             $table->timestamps();
             $table->integer('created_by_id');
             $table->integer('updated_by_id');

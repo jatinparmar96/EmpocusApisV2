@@ -52,17 +52,22 @@ class ChartAccountsMaster extends Controller
             $account->ca_code = $request->get('ca_code');
             $account->ca_opening_amount = $request->get('ca_opening_amount');
             $account->ca_opening_type = $request->get('ca_opening_type');
-            $account->ca_website = $request->get('ca_website');
             $account->ca_pan = $request->get('ca_pan');
             $account->ca_gstn = $request->get('ca_gstn');
             $account->ca_tan = $request->get('ca_tan');
             $account->ca_date_opened = $request->get('ca_date_opened');
             $account->updated_by_id = $user->id;
             try {
+                DB::beginTransaction();
                 $account->save();
                 CA_ContactsController::form($request, $account->id);
-                AddressController::storeAddress($request, 'ca_', 'ChartOfAccounts', $account->id);
+                if ($request->has('address')) {
+                    $account->address()->create($request->get('address'));
+                }
+                DB::commit();
             } catch (\Exception $e) {
+                DB::rollBack();
+                dd($e);
                 $status = false;
                 $message = 'Something is wrong' . $e;
             }
@@ -84,18 +89,7 @@ class ChartAccountsMaster extends Controller
     public function query()
     {
         $current_company_id = TokenController::getCompanyId();
-        $query = DB::table('chart_of_accounts as ca')
-            ->leftJoin('addresses as a', 'ca.id', 'a.type_id')
-            ->leftJoin('ca_contacts as co', 'ca.id', 'co.company_id')
-            ->select(
-                'ca.id', 'ca.ca_company_name', 'ca.ca_company_display_name', 'ca.ca_category', 'ca.ca_code', 'ca.ca_opening_amount', 'ca.ca_opening_type', 'ca.ca_website', 'ca.ca_pan', 'ca.ca_gstn', 'ca.ca_tan', 'ca.ca_date_opened'
-            )
-            ->addSelect(
-                'co.id as contact_id', 'co.ca_contact_first_name', 'co.ca_contact_last_name', 'co.ca_contact_mobile_number', 'co.ca_contact_email', 'co.ca_contact_designation', 'co.ca_contact_branch'
-            )
-            ->addSelect('a.id as address_id', 'a.building as ca_address_building', 'a.road_name as ca_address_road_name', 'a.landmark as ca_address_landmark', 'a.pincode as ca_address_pincode', 'a.city as ca_address_city', 'a.state as ca_address_state', 'a.country as ca_address_country')
-            ->where('ca.company_id', $current_company_id);
-        return $query;
+        return ChartOfAccount::with(['address','contacts'])->where('company_id',$current_company_id);
     }
 
     public function index()
@@ -119,7 +113,7 @@ class ChartAccountsMaster extends Controller
         if (!empty($search)) {
             $TableColumn = $this->TableColumn();
             foreach ($search as $key => $searchvalue) {
-                $query = $query->Where($TableColumn[$key], 'LIKE', '%' . $searchvalue . '%');
+                $query = $query->Where($key, 'LIKE', '%' . $searchvalue . '%');
             }
         }
 
@@ -140,7 +134,6 @@ class ChartAccountsMaster extends Controller
             "ca_last_name" => "ca.ca_last_name",
             "ca_mobile_number" => "ca.ca_mobile_number",
             "ca_email" => "ca.ca_email",
-            "ca_website" => "ca.ca_website",
             "ca_designation" => "ca.ca_designation",
             "ca_branch" => "ca.ca_branch",
             "ca_pan" => "ca.ca_pan",
@@ -159,10 +152,10 @@ class ChartAccountsMaster extends Controller
     {
         $sort = \Request::get('sort');
         if (!empty($sort)) {
-            $TableColumn = $this->TableColumn();
-            $query = $query->orderBy($TableColumn[key($sort)], $sort[key($sort)]);
+
+            $query = $query->orderBy($sort->column,$sort->order);
         } else
-            $query = $query->orderBy('ca.ca_company_name', 'ASC');
+            $query = $query->orderBy('ca_company_name', 'ASC');
         return $query;
     }
 
