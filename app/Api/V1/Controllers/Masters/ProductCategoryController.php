@@ -140,7 +140,7 @@ class ProductCategoryController extends Controller
         $query = $this->query();
         $query = $this->search($query);
         $query = $this->sort($query);
-        $result = $query->where('pc.id', $id)->first();
+        $result = $query->where('id', $id)->first();
         return response()->json([
             'status' => true,
             'status_code' => 200,
