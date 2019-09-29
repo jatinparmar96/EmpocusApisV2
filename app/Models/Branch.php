@@ -12,6 +12,15 @@ class Branch extends Model
     }
     public function bank()
     {
-        return $this->hasOne('App\Models\Bank', 'branch_id');
+        return $this->hasOne('App\Models\Bank', 'id','branch_bank_id');
+    }
+
+    public function saveAddress($address){
+        if ($this->address){
+            $this->address()->update($address);
+        }
+        else{
+            $this->address()->create($address);
+        }
     }
 }

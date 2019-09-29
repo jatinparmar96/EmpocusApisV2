@@ -16,10 +16,12 @@ class CreateBranchesTable extends Migration
         Schema::create('branches', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('company_id');
-            $table->string('name');
-            $table->string('gst_number');
-            $table->string('code')->nullable();
-            $table->boolean('is_godown')->nullable();
+            $table->string('branch_name');
+            $table->string('branch_gst_number');
+            $table->string('branch_code')->nullable();
+            $table->boolean('branch_godown')->nullable();
+            $table->integer('branch_bank_id')->refereneces('id')->on('banks');
+
             $table->timestamps();
             $table->integer('created_by_id');
             $table->integer('updated_by_id');
