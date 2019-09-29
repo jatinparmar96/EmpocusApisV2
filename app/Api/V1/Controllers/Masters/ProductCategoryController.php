@@ -6,7 +6,6 @@ use App\Api\V1\Controllers\Authentication\TokenController;
 use App\Http\Controllers\Controller;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 
 class ProductCategoryController extends Controller
@@ -67,7 +66,7 @@ class ProductCategoryController extends Controller
     {
 
         $current_company_id = TokenController::getCompanyId();
-       return ProductCategory::query()->where('company_id',$current_company_id);
+        return ProductCategory::query()->where('company_id', $current_company_id);
     }
 
     public function index()
