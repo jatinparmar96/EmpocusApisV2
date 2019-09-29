@@ -18,7 +18,7 @@ class CreateBanksTable extends Migration
             $table->integer('branch_id')->nullable();
 
             $table->string('account_name');
-            $table->string('name');
+            $table->string('bank_name');
             $table->string('account_no');
             $table->string('ifsc_code');
             $table->string('branch');

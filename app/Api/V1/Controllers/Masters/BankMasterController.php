@@ -6,7 +6,6 @@ use App\Api\V1\Controllers\Authentication\TokenController;
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class BankMasterController extends Controller
 {
@@ -17,10 +16,10 @@ class BankMasterController extends Controller
 
         $status = true;
         $user = TokenController::getUser();
-
+        $error = '';
         $id = $request->get('id');
         if ($id == 'new') {
-            $count = Bank::where('name', $request->get('bank_name'))
+            $count = Bank::where('bank_name', $request->get('bank_name'))
                 ->where('account_name', $request->get('account_name'))
                 ->count();
             if ($count > 0) {
@@ -42,16 +41,15 @@ class BankMasterController extends Controller
             $message = 'Bank updated Successfully';
         }
         if ($status) {
-            $bank->account_name = $request->get('bank_account_name');
-            $bank->name = $request->get('bank_name');
-            $bank->account_no = $request->get('bank_account_number');
-            $bank->ifsc_code = $request->get('bank_ifsc_code');
-            $bank->branch = $request->get('bank_branch');
+            $bank->account_name = $request->get('account_name');
+            $bank->bank_name = $request->get('bank_name');
+            $bank->account_no = $request->get('account_no');
+            $bank->ifsc_code = $request->get('ifsc_code');
+            $bank->branch = $request->get('branch');
             $bank->updated_by_id = $user->id;
             try {
                 $bank->save();
             } catch (\Exception $e) {
-                dd($e);
                 $status = false;
                 $message = 'Something is wrong. Kindly Contact Admin' . $e;
             }
@@ -103,6 +101,19 @@ class BankMasterController extends Controller
         return $query;
     }
 
+    public function sort($query)
+    {
+        $sort = \Request::get('sort');
+        if (!empty($sort)) {
+            $TableColumn = $this->TableColumn();
+            $query = $query->orderBy($sort->column, $sort->order);
+        } else
+            $query = $query->orderBy('account_name', 'ASC');
+        return $query;
+    }
+
+    //use Helpers;
+
     public function TableColumn()
     {
         $TableColumn = array(
@@ -116,19 +127,6 @@ class BankMasterController extends Controller
             "branch" => "ba.branch",
         );
         return $TableColumn;
-    }
-
-    //use Helpers;
-
-    public function sort($query)
-    {
-        $sort = \Request::get('sort');
-        if (!empty($sort)) {
-            $TableColumn = $this->TableColumn();
-            $query = $query->orderBy($sort->column, $sort->order);
-        } else
-            $query = $query->orderBy('account_name', 'ASC');
-        return $query;
     }
 
     public function full_list()
@@ -151,7 +149,7 @@ class BankMasterController extends Controller
         $query = $this->query();
         $query = $this->search($query);
         $query = $this->sort($query);
-        $result = $query->where('ba.id', $id)->first();
+        $result = $query->where('id', $id)->first();
         return response()->json([
             'status' => true,
             'status_code' => 200,
