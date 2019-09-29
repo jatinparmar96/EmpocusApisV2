@@ -20,6 +20,7 @@ class LeadController extends Controller
         $leads = Lead::query()->with([
             'assigned_to',
             'contact_persons',
+            'product',
             'dueTasks',
             'pendingTaskClose',
             'pendingTaskToday',

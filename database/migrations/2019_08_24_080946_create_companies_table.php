@@ -18,23 +18,19 @@ class CreateCompaniesTable extends Migration
             $table->integer('user_id');
             $table->string('name');
             $table->string('display_name')->nullable();
-            $table->string('fax')->nullable();
+            $table->string('email')->nullable();
             $table->string('pan_number')->nullable();
             $table->string('website')->nullable();
-
             $table->string('tan_number')->nullable();
+
             $table->string('iec_number')->nullable();
             $table->string('epc_number')->nullable();
             $table->string('ssi_number')->nullable();
             $table->string('nsic_number')->nullable();
             $table->string('udyog_aadhaar')->nullable();
             $table->string('tds_number')->nullable();
-
             $table->string('cin_number')->nullable();
-
-            $table->string('logo')->nullable();
-
-            $table->integer('smtp_setting')->nullable();
+            $table->string('gst_number')->nullable();
             $table->timestamps();
 
             $table->integer('created_by_id')->references('id')->on('users');

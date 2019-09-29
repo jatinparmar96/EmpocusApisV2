@@ -24,7 +24,7 @@ class CreateLeadsTable extends Migration
 
             // Foreign Keys
             $table->integer('assigned_to')->references('id')->on('employees');
-            $table->integer('product')->references('id')->on('products');
+            $table->integer('product')->references('id')->on('raw_products');
 
             // Nullable Fields
             $table->json('company_info')->nullable();

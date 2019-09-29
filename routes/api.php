@@ -70,6 +70,8 @@ $api->version('v1', function (Router $api) {
 
         $api->group(['prefix' => 'admin'], function (Router $api) {
             $api->get('app_version', 'App\\Api\\V1\\Controllers\\Masters\\VersionController@get_version');
+
+            $api->get('user/company','App\\Api\\V1\\Controllers\\Masters\\CompanyController@getUserCompany');
             /* Companies table*/
             $api->post('company', 'App\\Api\\V1\\Controllers\\Masters\\CompanyController@store');
             $api->post('company_other_details', 'App\\Api\\V1\\Controllers\\Masters\\CompanyController@storeOtherDetails');

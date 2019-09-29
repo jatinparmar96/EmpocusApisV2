@@ -69,6 +69,10 @@ class Lead extends Model
         return $this->hasOne('\App\Models\Master\Employee', 'id', 'assigned_to');
     }
 
+    public function product()
+    {
+        return $this->hasOne('App\Models\Master\Contact', 'id','product');
+    }
 
 
     /**
