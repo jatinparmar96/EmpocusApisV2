@@ -24,8 +24,7 @@ class CreateCAContactsTable extends Migration
             $table->string('ca_contact_designation')->nullable();
             $table->string('ca_contact_branch')->nullable();
             $table->timestamps();
-            $table->integer('created_by_id');
-            $table->integer('updated_by_id');
+
         });
     }
 
