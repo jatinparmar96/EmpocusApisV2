@@ -60,18 +60,15 @@ class ChartAccountsMaster extends Controller
             try {
                 DB::beginTransaction();
                 $account->save();
-                CA_ContactsController::form($request, $account->id);
-                if ($request->has('address')) {
-                    $account->address()->create($request->get('address'));
-                }
+                $account->saveContact($request->get('contact'));
+                $account->saveAddress($request->get('address'));
+
                 DB::commit();
             } catch (\Exception $e) {
                 DB::rollBack();
-                dd($e);
                 $status = false;
                 $message = 'Something is wrong' . $e;
             }
-            $account = $this->query()->where('ca.id', $account->id)->first();
             return response()->json([
                 'status' => $status,
                 'data' => $account,
@@ -89,7 +86,7 @@ class ChartAccountsMaster extends Controller
     public function query()
     {
         $current_company_id = TokenController::getCompanyId();
-        return ChartOfAccount::with(['address','contacts'])->where('company_id',$current_company_id);
+        return ChartOfAccount::with(['address', 'contact'])->where('company_id', $current_company_id);
     }
 
     public function index()
@@ -153,7 +150,7 @@ class ChartAccountsMaster extends Controller
         $sort = \Request::get('sort');
         if (!empty($sort)) {
 
-            $query = $query->orderBy($sort->column,$sort->order);
+            $query = $query->orderBy($sort->column, $sort->order);
         } else
             $query = $query->orderBy('ca_company_name', 'ASC');
         return $query;
@@ -176,8 +173,7 @@ class ChartAccountsMaster extends Controller
     public function show($id)
     {
         $query = $this->query();
-        $result = $query->where('ca.id', $id)->first();
-        $result->addresses = AddressController::get_address_by_type($id, 'ChartOfAccounts');
+        $result = $query->where('id', $id)->first();
         return response()->json([
             'status' => true,
             'status_code' => 200,
